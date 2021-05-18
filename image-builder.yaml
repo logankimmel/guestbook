@@ -1,0 +1,37 @@
+# Builder and Image for image
+---
+apiVersion: kpack.io/v1alpha1
+kind: Builder
+metadata:
+  name: demo-app-go-builder
+  namespace: demo-app
+spec:
+  serviceAccount: demo-app-sa
+  tag:  harbor.vmw.binbytes.io/guestbook/guestbook-builder
+  stack:
+    name: tiny
+    kind: ClusterStack
+  store:
+    name: default
+    kind: ClusterStore
+  order:
+  - group:
+    - id: tanzu-buildpacks/go
+---
+# Image
+apiVersion: kpack.io/v1alpha1
+kind: Image
+metadata:
+  name: inventory
+  namespace: demo-app
+spec:
+  serviceAccount: demo-app-sa
+  tag:  harbor.vmw.binbytes.io/guestbook/guestbook-app
+  builder:
+    name: demo-app-go-builder
+    kind: Builder
+  source:
+    git:
+      url: https://github.com/logankimmel/guestbook
+      revision: master
+    subPath: inventory
